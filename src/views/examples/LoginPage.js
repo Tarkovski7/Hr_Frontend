@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState, useContext } from "react"; // useState ve useContext hook'larını import ediyoruz
+import { Link, useNavigate } from "react-router-dom"; // Link bileşenini ve useNavigate hook'unu import ediyoruz
+import Swal from "sweetalert2";
 
 // reactstrap components
 import {
@@ -23,6 +25,13 @@ import TransparentFooter from "components/Footers/TransparentFooter.js";
 function LoginPage() {
   const [firstFocus, setFirstFocus] = React.useState(false);
   const [lastFocus, setLastFocus] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [forgotPassword, setForgotPassword] = useState(false);
+
   React.useEffect(() => {
     document.body.classList.add("login-page");
     document.body.classList.add("sidebar-collapse");
@@ -34,6 +43,85 @@ function LoginPage() {
       document.body.classList.remove("sidebar-collapse");
     };
   }, []);
+  const validatePassword = () => {
+    if (!/(?=.[a-z])/.test(password)) {
+      setPasswordError("Parola küçük harf içermelidir.");
+      return false;
+    }
+
+    if (!/(?=.[A-Z])/.test(password)) {
+      setPasswordError("Parola büyük harf içermelidir.");
+      return false;
+    }
+
+    if (!/(?=.\d)/.test(password)) {
+      setPasswordError("Parola rakam içermelidir.");
+      return false;
+    }
+
+    if (!/(?=.[!@#$%^&*.,])/.test(password)) {
+      setPasswordError("Parola özel karakter içermelidir.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateEmail = () => {
+    if (!email.endsWith("@bilgeadam.com")) {
+      setEmailError("E-Mail adresi @bilgeadam.com ile bitmelidir.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const login = async () => {
+    // Giriş işlemi burada gerçekleştirilecek
+  };
+
+  // navigate fonksiyonunu burada tanımlayın
+  const navigate = useNavigate();
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    // E-posta ve şifre bilgilerini state'ten al
+    console.log(email);
+    console.log(password);
+
+    // Hata mesajlarını temizle
+    setPasswordError("");
+    setEmailError("");
+
+    // Şifre ve e-posta doğrulama fonksiyonlarını çağır
+    const isPasswordValid = validatePassword();
+    const isEmailValid = validateEmail();
+
+    // Eğer her iki doğrulama da başarılı ise giriş yap
+    if (isPasswordValid && isEmailValid) {
+      try {
+        // Giriş işlemini gerçekleştir
+        await login(email, password);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Giriş başarılı",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setTimeout(() => {
+          navigate("/profile-page"); // Giriş başarılı olduğunda profile-page'e yönlendir
+        }, 1500);
+      } catch (error) {
+        // Hata durumunda kullanıcıya bilgi ver
+        Swal.fire({
+          icon: "error",
+          title: "Giriş Başarısız!",
+          text: "Lütfen bilgilerinizi kontrol ederek tekrar deneyiniz.",
+        });
+      }
+    }
+  };
   return (
     <>
       <ExamplesNavbar />
@@ -71,7 +159,7 @@ function LoginPage() {
                       </InputGroupAddon>
                       <Input
                         placeholder="E-mail..."
-                        type="email" 
+                        type="email"
                         onFocus={() => setFirstFocus(true)}
                         onBlur={() => setFirstFocus(false)}
                       ></Input>
@@ -100,13 +188,16 @@ function LoginPage() {
                     <Button
                       block
                       className="btn-round"
+                      to="/profile-page"
                       color="info"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={handleLogin}
                       size="lg"
+                      tag={Link}
                     >
                       Giriş Yap
                     </Button>
+
                     <div className="pull-left">
                       <h6>
                         <a
