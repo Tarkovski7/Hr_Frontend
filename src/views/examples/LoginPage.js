@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react"; // useState ve useContext hook'larını import ediyoruz
 import { Link, useNavigate } from "react-router-dom"; // Link bileşenini ve useNavigate hook'unu import ediyoruz
 import Swal from "sweetalert2";
-
+import axios from "axios";
 // reactstrap components
 import {
   Button,
@@ -47,7 +47,6 @@ function LoginPage() {
     return true;
   };
 
-
   const validatePassword = () => {
     if (!password) {
       setPasswordError("Şifre boş olamaz.");
@@ -64,23 +63,39 @@ function LoginPage() {
     return true;
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  const handleLogin = (e) => {
-    e.preventDefault(); // Formun sayfa yenilenmesini engelle
+    try {
+      const response = await axios.post(
+        "https://localhost:7198/api/Auth/Login",
+        {
+          email: email,
+          password: password,
+        }
+      );
 
-    // E-posta ve şifre doğrulama fonksiyonlarını çağır
-    const isEmailValid = validateEmail();
-    const isPasswordValid = validatePassword();
-
-    // Eğer e-posta ve şifre geçerliyse, giriş yap
-    if (isEmailValid && isPasswordValid) {
-      // Giriş işlemi burada gerçekleştirilecek
-      console.log("Giriş başarılı!");
-      navigate("/profile-page")
+      if (response.status === 200) {
+        // Başarılı giriş durumunda yapılacak işlemler
+        console.log("Giriş başarılı!");
+        navigate("/profile-page");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Giriş başarısız. Lütfen tekrar deneyin!",
+        });
+      }
+    } catch (error) {
+      // Hata durumunda yapılacak işlemler
+      console.error("Giriş hatası:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin!",
+      });
     }
   };
-
-
 
   React.useEffect(() => {
     document.body.classList.add("login-page");
@@ -175,13 +190,9 @@ function LoginPage() {
 
                     <div className="pull-left">
                       <h6>
-                        <a
-                          className="link"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
+                      <Link className="link" to="/register-page">
                           Kayıt Ol
-                        </a>
+                        </Link>
                       </h6>
                     </div>
                     <div className="pull-right">
