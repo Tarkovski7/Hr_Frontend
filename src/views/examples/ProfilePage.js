@@ -1,138 +1,147 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 
-import { Input } from "reactstrap";
-// reactstrap components
 import {
   Button,
-  NavItem,
-  NavLink,
-  Nav,
-  TabContent,
-  TabPane,
   Container,
   Row,
   Col,
-  UncontrolledTooltip,
+  FormGroup,
+  Label,
+  Input,
 } from "reactstrap";
 
-// core components
-import ExamplesNavbar from "components/Navbars/ExamplesNavbar.js";
-import ProfilePageHeader from "components/Headers/ProfilePageHeader.js";
-import DefaultFooter from "components/Footers/DefaultFooter.js";
+import ExamplesNavbar from "components/Navbars/ExamplesNavbar";
+import ProfilePageHeader from "components/Headers/ProfilePageHeader";
+import DefaultFooter from "components/Footers/DefaultFooter";
 
 function ProfilePage() {
-  const [pills, setPills] = React.useState("3");
-  React.useEffect(() => {
-    document.body.classList.add("profile-page");
-    document.body.classList.add("sidebar-collapse");
-    document.documentElement.classList.remove("nav-open");
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-    return function cleanup() {
-      document.body.classList.remove("profile-page");
-      document.body.classList.remove("sidebar-collapse");
+  const [userData, setUserData] = useState({});
+  const { id } = useParams();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://localhost:7198/api/SiteOwner/GetSummarySiteOwner?id=${id}`
+        );
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
-  }, []);
+
+    fetchData();
+
+    return () => {
+      // Cleanup function if needed
+    };
+  }, [id]);
+
   return (
     <>
       <ExamplesNavbar />
-
       <div className="wrapper">
-        <ProfilePageHeader />
         <div className="section">
           <Container>
-            <div className="button-container">
-              <Button className="btn-round" color="info" size="lg">
-                Tüm Detaylar
-              </Button>
-              <Button
-                className="btn-round btn-icon"
-                color="default"
-                id="tooltip515203352"
-                size="lg"
-              >
-                <i className="fab fa-twitter"></i>
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltip515203352">
-                Follow me on Twitter
-              </UncontrolledTooltip>
-              <Button
-                className="btn-round btn-icon"
-                color="default"
-                id="tooltip340339231"
-                size="lg"
-              >
-                <i className="fab fa-instagram"></i>
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltip340339231">
-                Follow me on Instagram
-              </UncontrolledTooltip>
-            </div>
-            <Row className="mt-3 mb-3">
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
+            <Row>
+              <Col md="6">
+                <ProfilePageHeader />
               </Col>
-              <Col md="3">
-                <Input
-                  placeholder="{Soyadı}"
-                  readonly=""
-                  type="text"
-                  disabled
-                />
-              </Col>
-              <Col md="3">
-                <Input placeholder="{Mail}" readonly="" type="text" disabled />
-              </Col>
-              <Col md="3">
-                <Input
-                  placeholder="{Telefon}"
-                  readonly=""
-                  type="text"
-                  disabled
-                />
+              <Col md="6">
+                <div className="button-container">
+                  <Button className="btn-round" color="info" size="lg">
+                    Tüm Detaylar
+                  </Button>
+                  <Row className="mt-3 mb-3">
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="firstName">Ad</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          value={userData.firstName || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="lastName">Soyad</Label>
+                        <Input
+                          id="lastName"
+                          type="text"
+                          value={userData.lastName || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3 mb-3">
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="fullName">Tam Ad</Label>
+                        <Input
+                          id="fullName"
+                          type="text"
+                          value={userData.fullName || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="email">E-posta</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={userData.email || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3 mb-3">
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="phoneNumber">Telefon</Label>
+                        <Input
+                          id="phoneNumber"
+                          type="text"
+                          value={userData.phoneNumber || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="address">Adres</Label>
+                        <Input
+                          id="address"
+                          type="text"
+                          value={userData.address || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row className="mt-3 mb-3">
+                    <Col md="6">
+                      <FormGroup>
+                        <Label for="departmentName">Departman</Label>
+                        <Input
+                          id="departmentName"
+                          type="text"
+                          value={userData.departmentName || ""}
+                          disabled
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
               </Col>
             </Row>
-            <Row className="mt-3 mb-3">
-              <Col md="3">
-                <Input placeholder="{adres}" readonly="" type="text" disabled />
-              </Col>
-              <Col md="3">
-                <Input
-                  placeholder="{Meslek}"
-                  readonly=""
-                  type="text"
-                  disabled
-                />
-              </Col>
-              <Col md="3">
-                <Input
-                  placeholder="{Departman}"
-                  readonly=""
-                  type="text"
-                  disabled
-                />
-              </Col>
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
-              </Col>
-            </Row>
-            <Row className="mt-3 mb-3">
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
-              </Col>
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
-              </Col>
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
-              </Col>
-              <Col md="3">
-                <Input placeholder="{adı}" readonly="" type="text" disabled />
-              </Col>
-            </Row>
-
-            {/* Portfolio */}
-            
           </Container>
         </div>
         <DefaultFooter />
