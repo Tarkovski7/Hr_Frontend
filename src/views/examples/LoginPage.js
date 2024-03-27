@@ -78,6 +78,7 @@ function LoginPage() {
       if (response.status === 200) {
         // Başarılı giriş durumunda yapılacak işlemler
         console.log("Giriş başarılı!");
+        
         navigate("/profile-page");
       } else {
         Swal.fire({
