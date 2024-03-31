@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams , useLocation } from "react-router-dom";
 import axios from "axios";
 
 import {
@@ -17,6 +17,8 @@ import ProfilePageHeader from "components/Headers/ProfilePageHeader";
 import DefaultFooter from "components/Footers/DefaultFooter";
 
 function ProfilePage() {
+  const location = useLocation();
+  const userId = location.state.userId;
   const [userData, setUserData] = useState({});
   const { id } = useParams();
 
@@ -24,9 +26,10 @@ function ProfilePage() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://localhost:7198/api/SiteOwner/GetSummarySiteOwner?id=${id}`
+          `https://localhost:7198/api/SiteOwner/GetSummarySiteOwner?id=${userId}`
         );
         setUserData(response.data);
+        console.log(userId);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -37,19 +40,19 @@ function ProfilePage() {
     return () => {
       // Cleanup function if needed
     };
-  }, [id]);
+  }, [userId]);
 
   return (
     <>
       <ExamplesNavbar />
       <div className="wrapper">
         <div className="section">
-          <Container>
+          
             <Row>
-              <Col md="6">
+              <Col md="3" >
                 <ProfilePageHeader />
               </Col>
-              <Col md="6">
+              <Col md="9">
                 <div className="button-container">
                   <Button className="btn-round" color="info" size="lg">
                     Tüm Detaylar
@@ -142,7 +145,7 @@ function ProfilePage() {
                 </div>
               </Col>
             </Row>
-          </Container>
+          
         </div>
         <DefaultFooter />
       </div>

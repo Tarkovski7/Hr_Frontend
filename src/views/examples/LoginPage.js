@@ -62,7 +62,7 @@ function LoginPage() {
     setPasswordError(""); // Eğer hata yoksa hata mesajını temizle
     return true;
   };
-
+  const [userData, setUserData] = useState({});
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -78,8 +78,8 @@ function LoginPage() {
       if (response.status === 200) {
         // Başarılı giriş durumunda yapılacak işlemler
         console.log("Giriş başarılı!");
-        
-        navigate("/profile-page");
+        setUserData(response.data);
+        navigate("/profile-page", { state: { userId: response.data.id } });
       } else {
         Swal.fire({
           icon: "error",
@@ -104,11 +104,12 @@ function LoginPage() {
     document.documentElement.classList.remove("nav-open");
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+
     return function cleanup() {
       document.body.classList.remove("login-page");
       document.body.classList.remove("sidebar-collapse");
     };
-  }, []);
+  }, [userData]);
   return (
     <>
       <ExamplesNavbar />
@@ -191,7 +192,7 @@ function LoginPage() {
 
                     <div className="pull-left">
                       <h6>
-                      <Link className="link" to="/register-page">
+                        <Link className="link" to="/register-page">
                           Kayıt Ol
                         </Link>
                       </h6>
